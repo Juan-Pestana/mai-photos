@@ -25,9 +25,13 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+dev.db
+dev.db-shm
+dev.db-wal
+
 # local env files
 .env*.local
-
+.env
 # vercel
 .vercel
 
