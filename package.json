@@ -10,12 +10,23 @@
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^0.9.0",
+    "@aws-sdk/client-s3": "^3.556.0",
     "@libsql/client": "^0.6.0",
+    "@radix-ui/react-toast": "^1.1.5",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.0",
     "drizzle-orm": "^0.30.8",
+    "lucide-react": "^0.372.0",
     "next": "14.2.1",
-    "next-auth": "^4.24.7",
+    "next-auth": "^5.0.0-beta.16",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "react-dropzone": "^14.2.3",
+    "react-photo-album": "^2.3.1",
+    "sharp": "^0.33.3",
+    "tailwind-merge": "^2.3.0",
+    "tailwindcss-animate": "^1.0.7",
+    "zod": "^3.22.5"
   },
   "devDependencies": {
     "@types/node": "^20",
