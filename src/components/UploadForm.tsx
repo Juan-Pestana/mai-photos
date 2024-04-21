@@ -1,3 +1,4 @@
+'use client'
 import { uploadFile } from '@/actions'
 import { useFormState } from 'react-dom'
 import SubmitButton from './submitButton'
@@ -10,13 +11,13 @@ export const initialState = {
   status: '',
 }
 
-export default function UploadForm() {
+export default function UploadForm({ id }: { id?: string }) {
   const [state, formAction] = useFormState(uploadFile, initialState)
   const [preview, setPreview] = useState<string | ArrayBuffer | null>(null)
   const [imageSize, setImageSize] = useState<string[] | null>(null)
   //Pending SetUp Toast
   const { toast } = useToast()
-
+  console.log(id)
   useEffect(() => {
     if (state.status === 'success') {
       toast({
@@ -63,7 +64,11 @@ export default function UploadForm() {
   async function handleOnSubmit(e: React.SyntheticEvent) {
     e.preventDefault()
 
-    if (typeof acceptedFiles[0] === 'undefined') return
+    if (typeof acceptedFiles[0] === 'undefined')
+      return toast({
+        title: 'Please select a Photo to upload',
+        variant: 'default',
+      })
 
     const formData = new FormData()
 
@@ -73,6 +78,9 @@ export default function UploadForm() {
         formData.append('width', imageSize[0])
         formData.append('height', imageSize[1])
       }
+      if (id) {
+        formData.append('userId', id)
+      }
     })
 
     await formAction(formData)
@@ -81,8 +89,6 @@ export default function UploadForm() {
   return (
     <div className="form-wrapper px-2 max-w-screen-lg mx-auto ">
       <form onSubmit={handleOnSubmit}>
-        {/* <input type="file" name="file" id="file" accept="images/*" /> */}
-
         <div
           className="flex items-center justify-center w-full my-5"
           {...getRootProps()}

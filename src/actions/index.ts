@@ -1,9 +1,11 @@
 'use server'
 import { revalidatePath } from 'next/cache'
+import { File } from 'buffer'
+import { z, ZodError } from 'zod'
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
 import sharp from 'sharp'
-import { File } from 'buffer'
-import * as z from 'zod'
+import { db } from '@/db'
+import { photos } from '@/db/schema/photos'
 
 const s3Client = new S3Client({
   region: process.env.NEXT_AWS_S3_REGION,
@@ -13,28 +15,39 @@ const s3Client = new S3Client({
   },
 })
 
-async function uploadFileToS3(
+export async function uploadFileToS3(
   file: Buffer,
   fileName: string,
   width: number,
   height: number
 ) {
-  console.log('dentro del upload')
   const fileBuffer = await sharp(file)
-    .jpeg({ quality: 90 })
+    .jpeg({ quality: 80 })
     .resize(width / 2, height / 2)
     .toBuffer()
 
   const params = {
     Bucket: process.env.NEXT_AWS_S3_BUCKET_NAME,
-    Key: `${Date.now()}${fileName}`,
+    Key: `photos/${fileName}`,
     Body: fileBuffer,
     ContentType: 'image/jpg',
   }
 
+  const originalParams = {
+    Bucket: process.env.NEXT_AWS_S3_BUCKET_NAME,
+    Key: `original/${fileName}`,
+    Body: file,
+    ContentType: 'image/jpg',
+  }
+
   const command = new PutObjectCommand(params)
+  const originalCommand = new PutObjectCommand(originalParams)
   try {
-    const response = await s3Client.send(command)
+    //const response = await s3Client.send(command)
+    const response = await Promise.all([
+      s3Client.send(command),
+      s3Client.send(originalCommand),
+    ])
     console.log('File uploaded successfully:', response)
     return `${fileName}`
   } catch (error) {
@@ -48,6 +61,7 @@ export async function uploadFile(
   formData: FormData
 ) {
   const formDataSchema = z.object({
+    userId: z.string().min(1, 'You must be authenticated'),
     width: z
       .string()
       .min(1, 'File size is Required')
@@ -68,6 +82,7 @@ export async function uploadFile(
   })
   try {
     const data = formDataSchema.parse({
+      userId: formData.get('userId'),
       width: formData.get('width'),
       height: formData.get('height'),
       file: formData.get('file'),
@@ -75,14 +90,33 @@ export async function uploadFile(
 
     if (data.file && data.file instanceof File) {
       const buffer = Buffer.from(await data.file.arrayBuffer())
-      console.log('antes del upload')
-      //await uploadFileToS3(buffer, data.file.name, data.width, data.height)
+      const name = `${Date.now()}${data.file.name}`
+      const uploadResponse = await uploadFileToS3(
+        buffer,
+        name,
+        data.width,
+        data.height
+      )
+      if (uploadResponse) {
+        const res = await db.insert(photos).values({
+          url: name,
+          width: data.width,
+          height: data.height,
+          user: data.userId,
+          //OJO CAMBIAR A DINAMICO
+          album_id: 1,
+          location: 'caca',
+        })
+      }
     }
 
     revalidatePath('/')
     return { status: 'success', message: 'File has been uploaded.' }
   } catch (error) {
     console.log(error)
+    if (error instanceof ZodError) {
+      return { status: 'error', message: error.message }
+    }
     return { status: 'error', message: 'Failed to upload file.' }
   }
 }

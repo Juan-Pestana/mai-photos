@@ -8,6 +8,12 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'mai-photos.s3.eu-west-3.amazonaws.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 }
