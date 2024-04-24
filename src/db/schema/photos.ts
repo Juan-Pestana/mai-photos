@@ -1,11 +1,4 @@
-//id
-//url
-//created_at
-//user
-//location
-//month
-//album
-import { sql } from 'drizzle-orm'
+import { relations, sql } from 'drizzle-orm'
 import { integer, text, sqliteTable, int } from 'drizzle-orm/sqlite-core'
 import { albums } from './album'
 import { users } from './authSchema'
@@ -24,3 +17,10 @@ export const photos = sqliteTable('photos', {
     .notNull()
     .references(() => users.id),
 })
+
+export const photosRelations = relations(photos, ({ one }) => ({
+  albums: one(albums, {
+    fields: [photos.album_id],
+    references: [albums.id],
+  }),
+}))

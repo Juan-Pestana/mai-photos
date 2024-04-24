@@ -18,7 +18,9 @@ export default async function testComponents() {
 
   return (
     <>
-      <h1 className="text-4xl py-10 text-center">Upload Images to S3</h1>
+      <h1 className="text-4xl py-10 text-center">
+        Upload Images to Album Name
+      </h1>
 
       <UploadForm id={session.user.id} />
     </>

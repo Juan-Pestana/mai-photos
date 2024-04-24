@@ -12,12 +12,13 @@ export const initialState = {
 }
 
 export default function UploadForm({ id }: { id?: string }) {
+  //@ts-ignore
   const [state, formAction] = useFormState(uploadFile, initialState)
   const [preview, setPreview] = useState<string | ArrayBuffer | null>(null)
   const [imageSize, setImageSize] = useState<string[] | null>(null)
-  //Pending SetUp Toast
+
   const { toast } = useToast()
-  console.log(id)
+
   useEffect(() => {
     if (state.status === 'success') {
       toast({
@@ -34,7 +35,7 @@ export default function UploadForm({ id }: { id?: string }) {
         variant: 'destructive',
       })
     }
-  }, [state.status])
+  }, [state.message])
 
   const onDrop = useCallback((acceptedFiles: Array<File>) => {
     const file = new FileReader()
@@ -82,7 +83,7 @@ export default function UploadForm({ id }: { id?: string }) {
         formData.append('userId', id)
       }
     })
-
+    //@ts-ignore
     await formAction(formData)
   }
 

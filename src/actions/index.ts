@@ -107,15 +107,19 @@ export async function uploadFile(
           album_id: 1,
           location: 'caca',
         })
+        if (res) console.log('db res', res)
       }
     }
 
     revalidatePath('/')
-    return { status: 'success', message: 'File has been uploaded.' }
+    return {
+      status: 'success',
+      message: `File ${data.file.name} has been uploaded.`,
+    }
   } catch (error) {
     console.log(error)
     if (error instanceof ZodError) {
-      return { status: 'error', message: error.message }
+      return { status: 'error', message: error.errors[0] }
     }
     return { status: 'error', message: 'Failed to upload file.' }
   }

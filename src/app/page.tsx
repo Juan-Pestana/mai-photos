@@ -1,42 +1,43 @@
-'use client'
-import Image from 'next/image'
+'use server'
 
 import { auth, signOut } from '@/auth/auth'
 import { redirect } from 'next/navigation'
+import PhotoGallery from '@/components/photoGallery'
+import { db } from '@/db'
 
-import PhotoAlbum from 'react-photo-album'
-import NextJsImage from '@/components/nextJsImage'
+//import photos from '@/photos'
+import { albums } from '../db/schema/album'
+import { eq } from 'drizzle-orm'
 
-import photos from '@/photos'
+export default async function Home() {
+  const session = await auth()
+  if (!session) {
+    return redirect('/signIn')
+  }
 
-export default function Home() {
-  // const session = await auth()
+  const pphotos = await db.query.albums.findFirst({
+    where: eq(albums.id, 1),
+    with: { photos: true },
+  })
 
-  // if (!session) {
-  //   return redirect('/signIn')
-  // }
+  const albumPhotos = pphotos?.photos.map((photo) => {
+    return {
+      src: `${process.env.NEXT_PUBLIC_IMAGE_PATH}${photo.url}`,
+      width: photo.width!,
+      height: photo.height!,
+    }
+  })
+
+  if (!albumPhotos || !albumPhotos?.length) {
+    return <div>There are no phots in this album</div>
+  }
+
+  //console.log(pphotos)
 
   return (
     <>
-      <div className="h-full">
-        <main className="my-10 mx-auto max-w-screen-xl h-full">
-          <PhotoAlbum
-            photos={photos}
-            layout="rows"
-            defaultContainerWidth={1280}
-            renderPhoto={NextJsImage}
-            targetRowHeight={150}
-            sizes={{
-              size: 'calc(100vw - 40px)',
-              sizes: [
-                { viewport: '(max-width: 299px)', size: 'calc(100vw - 10px)' },
-                { viewport: '(max-width: 599px)', size: 'calc(100vw - 20px)' },
-                { viewport: '(max-width: 1199px)', size: 'calc(100vw - 30px)' },
-              ],
-            }}
-            // onClick={({ index }) => setIndex(index)}
-          />
-        </main>
+      <div>
+        <PhotoGallery photos={albumPhotos} />
       </div>
     </>
   )

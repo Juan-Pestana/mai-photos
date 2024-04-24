@@ -46,13 +46,4 @@ const photos = unsplashPhotos.map((photo) => {
   }
 })
 
-const NPhoto = {
-  src: 'https://mai-photos.s3.eu-west-3.amazonaws.com/photos/1713737428957IMG20230827161535.jpg',
-  width: 2048,
-  height: 1152,
-  srcSet: [],
-}
-
-photos.push(NPhoto)
-
 export default photos
