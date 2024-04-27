@@ -124,3 +124,21 @@ export async function uploadFile(
     return { status: 'error', message: 'Failed to upload file.' }
   }
 }
+
+export async function createAlbum(
+  prevState: { message: string; status: string },
+  formData: FormData
+) {
+  const formDataSchema = z.object({
+    albumName: z.string().min(1, 'We need a name for the album'),
+    owner: z.string().min(1, 'you need to be authenticated to create an album'),
+    coverImage: z
+      .custom<File>()
+      .refine((file) => !file || (!!file && file.size <= 10 * 1024 * 1024), {
+        message: 'The profile picture must be a maximum of 10MB.',
+      })
+      .refine((file) => !file || (!!file && file.type?.startsWith('image')), {
+        message: 'Only images are allowed to be sent.',
+      }),
+  })
+}

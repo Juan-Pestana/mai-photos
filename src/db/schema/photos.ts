@@ -11,10 +11,10 @@ export const photos = sqliteTable('photos', {
   height: integer('height'),
   location: text('location'),
   album_id: integer('album_id')
-    .notNull()
+    //.notNull()
     .references(() => albums.id),
   user: text('user_id')
-    .notNull()
+    //.notNull()
     .references(() => users.id),
 })
 

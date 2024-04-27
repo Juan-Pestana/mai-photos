@@ -18,7 +18,7 @@ interface IphotoGallery {
 function PhotoGallery({ photos }: IphotoGallery) {
   const [index, setIndex] = useState(-1)
   return (
-    <main className="my-10 mx-auto max-w-screen-xl h-full">
+    <main className="my-8 mx-auto max-w-screen-xl h-full">
       <PhotoAlbum
         photos={photos}
         layout="rows"
