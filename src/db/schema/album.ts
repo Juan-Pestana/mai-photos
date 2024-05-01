@@ -19,6 +19,7 @@ export const albums = sqliteTable('albums', {
   id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
   name: text('name'),
   ownerId: text('ownerId'), //add notNull
+  cover: text('cover'),
   created_at: text('created_at').default(sql`(CURRENT_DATE)`),
 })
 

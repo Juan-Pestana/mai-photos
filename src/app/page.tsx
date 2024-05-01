@@ -20,7 +20,15 @@ export default async function Home() {
 
   return (
     <>
-      <main></main>
+      <main className="flex flex-col justify-between">
+        <div>
+          <h2 className="text-xl">My Albums</h2>
+          <div></div>
+        </div>
+        <div>
+          <h2 className="text-xl">Shared with me</h2>
+        </div>
+      </main>
     </>
   )
 }

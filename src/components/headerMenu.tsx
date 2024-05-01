@@ -1,3 +1,4 @@
+import { createAlbum } from '@/actions'
 import { auth } from '@/auth/auth'
 import {
   Sheet,
@@ -8,6 +9,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { redirect } from 'next/navigation'
+import CreateAlbumForm from './CreateAlbumForm'
 
 export default async function HeaderMenu() {
   const session = await auth()
@@ -24,11 +26,15 @@ export default async function HeaderMenu() {
         <SheetContent>
           <SheetHeader>
             <SheetTitle>{session.user?.email}</SheetTitle>
-            <SheetDescription>
-              This action cannot be undone. This will permanently delete your
-              account and remove your data from our servers.
-            </SheetDescription>
           </SheetHeader>
+          <hr />
+          <nav className="h-full flex flex-col">
+            <div className="mt-8">
+              <h3 className="text-lg">Create new album</h3>
+              <hr />
+            </div>
+            <CreateAlbumForm />
+          </nav>
         </SheetContent>
       </Sheet>
     </>
