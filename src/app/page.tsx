@@ -9,10 +9,12 @@ import { db } from '@/db'
 import { albums } from '../db/schema/album'
 import { eq } from 'drizzle-orm'
 import Link from 'next/link'
+import MyAlbumsList from '@/components/myAlbumsList'
+import SharedAlbumsList from '@/components/sharedAlbumsList'
 
 export default async function Home() {
   const session = await auth()
-  if (!session) {
+  if (!session || !session.user?.id) {
     return redirect('/signIn')
   }
 
@@ -20,13 +22,14 @@ export default async function Home() {
 
   return (
     <>
-      <main className="flex flex-col justify-between">
+      <main className="flex flex-col justify-between mx-auto max-w-screen-xl my-10  px-3">
         <div>
           <h2 className="text-xl">My Albums</h2>
-          <div></div>
+          <MyAlbumsList id={session.user?.id} />
         </div>
         <div>
           <h2 className="text-xl">Shared with me</h2>
+          <SharedAlbumsList id={session.user?.id} />
         </div>
       </main>
     </>

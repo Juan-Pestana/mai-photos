@@ -1,5 +1,5 @@
 'use client'
-import { uploadFile } from '@/actions'
+import { uploadFile } from '@/actions/photos'
 import { useFormState } from 'react-dom'
 import SubmitButton from './submitButton'
 import { useCallback, useState, useEffect } from 'react'

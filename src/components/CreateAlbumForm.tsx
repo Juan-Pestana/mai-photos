@@ -1,6 +1,6 @@
 'use client'
 
-import { createAlbum } from '@/actions'
+import { createAlbum } from '@/actions/albums'
 import { useFormState } from 'react-dom'
 import { Input } from './ui/input'
 import { Label } from './ui/label'

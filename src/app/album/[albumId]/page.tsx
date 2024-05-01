@@ -27,7 +27,7 @@ export default async function AlbumsPage({
 
   const albumPhotos = album?.photos.map((photo) => {
     return {
-      src: `${process.env.NEXT_PUBLIC_IMAGE_PATH}${photo.url}`,
+      src: `${process.env.NEXT_PUBLIC_IMAGE_PATH}photos/${photo.url}`,
       width: photo.width!,
       height: photo.height!,
     }
