@@ -34,7 +34,7 @@ function CreateAlbumForm() {
 
     formData.append('album_cover', file, `cover${fileName}`)
     formData.append('album_name', albumName)
-    formData.append('album_decription', albumDescription)
+    formData.append('album_description', albumDescription)
 
     //@ts-ignore
     await formAction(formData)
