@@ -2,7 +2,11 @@ import React from 'react'
 import UploadForm from '@/components/UploadForm'
 import { auth } from '@/auth/auth'
 
-export default async function testComponents() {
+export default async function testComponents({
+  params,
+}: {
+  params: { albumId: string }
+}) {
   const session = await auth()
 
   if (!session || !session.user) {
@@ -22,7 +26,7 @@ export default async function testComponents() {
         Upload Images to Album Name
       </h1>
 
-      <UploadForm id={session.user.id} />
+      <UploadForm id={session.user.id!} albumId={params.albumId} />
     </>
   )
 }

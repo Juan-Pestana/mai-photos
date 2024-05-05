@@ -22,14 +22,12 @@ export default async function Home() {
 
   return (
     <>
-      <main className="flex flex-col justify-between mx-auto max-w-screen-xl my-10  px-3">
+      <main className="container mx-auto px-4 py-12 md:px-6 lg:py-16">
         <div>
-          <h2 className="text-xl">My Albums</h2>
           <MyAlbumsList id={session.user?.id} />
         </div>
-        <div>
-          <h2 className="text-xl">Shared with me</h2>
-          <SharedAlbumsList id={session.user?.id} />
+        <div className="mt-8">
+          <SharedAlbumsList email={session.user?.email!} id={session.user.id} />
         </div>
       </main>
     </>

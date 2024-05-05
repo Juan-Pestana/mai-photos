@@ -14,6 +14,10 @@ export async function uploadFile(
 ) {
   const formDataSchema = z.object({
     userId: z.string().min(1, 'You must be authenticated'),
+    albumId: z
+      .string()
+      .min(1, 'albumId is required')
+      .transform((albumId) => parseInt(albumId)),
     width: z
       .string()
       .min(1, 'File size is Required')
@@ -40,6 +44,7 @@ export async function uploadFile(
 
     const data = formDataSchema.parse({
       userId: formData.get('userId'),
+      albumId: formData.get('albumId'),
       width: formData.get('width'),
       height: formData.get('height'),
       file: formData.get('file'),
@@ -60,9 +65,7 @@ export async function uploadFile(
           width: data.width,
           height: data.height,
           user: data.userId,
-          //OJO CAMBIAR A DINAMICO
-          album_id: 1,
-          location: 'caca',
+          album_id: data.albumId,
         })
         if (res) console.log('db res', res)
       }

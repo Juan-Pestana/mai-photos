@@ -4,9 +4,10 @@ import { File } from 'buffer'
 import { z, ZodError } from 'zod'
 import { db } from '@/db'
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
-import { auth } from '@/auth/auth'
+import { auth, signIn } from '@/auth/auth'
 import sharp from 'sharp'
-import { albums } from '@/db/schema/album'
+import { albums, usersToAlbums } from '@/db/schema/album'
+import { redirect } from 'next/navigation'
 
 export async function createAlbum(
   prevState: { message: string; status: string },
@@ -14,6 +15,7 @@ export async function createAlbum(
 ) {
   const formDataSchema = z.object({
     album_name: z.string().min(1, 'We need a name for the album'),
+    album_description: z.string().optional(),
     album_cover: z
       .custom<File>()
       .refine((file) => !file || (!!file && file.size <= 10 * 1024 * 1024), {
@@ -21,7 +23,8 @@ export async function createAlbum(
       })
       .refine((file) => !file || (!!file && file.type?.startsWith('image')), {
         message: 'Only images are allowed to be sent.',
-      }),
+      })
+      .optional(),
   })
 
   try {
@@ -31,12 +34,12 @@ export async function createAlbum(
     }
     const data = formDataSchema.parse({
       album_name: formData.get('album_name'),
+      album_description: formData.get('album_description'),
       album_cover: formData.get('album_cover'),
     })
 
-    const photoName = `${Date.now()}${data.album_cover.name}`
-
     if (data.album_cover && data.album_cover instanceof File) {
+      const photoName = `${Date.now()}${data.album_cover.name}`
       const buffer = Buffer.from(await data.album_cover.arrayBuffer())
       const name = photoName
       const uploadResponse = await uploadCover(buffer, name)
@@ -45,12 +48,68 @@ export async function createAlbum(
         const res = await db.insert(albums).values({
           name: data.album_name,
           ownerId: session.user.id,
+          description: data.album_description,
           cover: name,
           //OJO CAMBIAR A DINAMICO
         })
         if (res) console.log('db res', res)
       }
+    } else {
+      const res = await db.insert(albums).values({
+        name: data.album_name,
+        ownerId: session.user.id,
+        description: data.album_description,
+
+        //OJO CAMBIAR A DINAMICO
+      })
+      if (res) console.log('db res', res)
     }
+
+    revalidatePath('/')
+  } catch (error) {
+    console.log(error)
+    if (error instanceof ZodError) {
+      return { status: 'error', message: error.errors[0] }
+    }
+    return { status: 'error', message: 'Failed to upload file.' }
+  }
+}
+
+export async function shareAlbum(
+  prevState: { message: string; status: string },
+  formData: FormData
+) {
+  const formDataSchema = z.object({
+    email: z
+      .string()
+      .min(1, 'indicate email to share the album with')
+      .email('email must be a valid email'),
+    albumId: z
+      .string()
+      .min(1, 'missing album Id')
+      .transform((albumId) => parseInt(albumId)),
+  })
+
+  const session = await auth()
+  if (!session || !session.user) {
+    throw new Error('unauthorized')
+  }
+
+  try {
+    const data = formDataSchema.parse({
+      email: formData.get('email'),
+      albumId: formData.get('albumId'),
+    })
+
+    console.log('estamos aqui', data.email)
+
+    await signIn('resend', { redirect: false, email: data.email })
+
+    const albumRelation = await db
+      .insert(usersToAlbums)
+      .values({ albumId: data.albumId, userEmail: data.email })
+
+    if (albumRelation) return { status: 'success', message: 'album shared' }
 
     revalidatePath('/')
   } catch (error) {
@@ -75,7 +134,7 @@ const s3Client = new S3Client({
 export async function uploadCover(file: Buffer, fileName: string) {
   const fileBuffer = await sharp(file)
     .jpeg({ quality: 60 })
-    .resize(400, 400)
+    .resize(400, 300)
     .toBuffer()
 
   const params = {

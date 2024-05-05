@@ -9,6 +9,7 @@ import { db } from '@/db'
 import { albums } from '@/db/schema/album'
 import { eq } from 'drizzle-orm'
 import Link from 'next/link'
+import ShareAlbumForm from '@/components/shareAlbumForm'
 
 export default async function AlbumsPage({
   params,
@@ -34,7 +35,7 @@ export default async function AlbumsPage({
   })
 
   if (!albumPhotos || !albumPhotos?.length) {
-    return <div>There are no phots in this album</div>
+    return <div>There are no photos in this album</div>
   }
 
   //console.log(pphotos)
@@ -48,17 +49,7 @@ export default async function AlbumsPage({
             <h1 className="text-2xl">{album?.name}</h1>
           </div>
 
-          <form className="flex-1 flex gap-2 justify-end " action="">
-            <input
-              className="px-2 py-1 rounded-md border-2 border-slate-300"
-              type="text"
-              placeholder="friends email"
-            />
-            <button className="px-3 py-1 rounded-md bg-blue-500 text-white">
-              {' '}
-              Invite{' '}
-            </button>
-          </form>
+          <ShareAlbumForm albumId={params.albumId} />
         </div>
         <PhotoGallery photos={albumPhotos} />
         <div className="flex items-center justify-center mb-8">

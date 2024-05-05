@@ -16,24 +16,37 @@ async function MyAlbumsList({ id }: { id: string }) {
 
   return (
     <>
-      <div className="p-4 flex flex-wrap gap-4">
+      <div className="flex items-center justify-between mb-8">
+        <h1 className="text-3xl font-bold tracking-tight">My Albums</h1>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
         {myAlbums.map((album) => (
-          <div
-            key={album.id}
-            className="border-4 border-slate-700 mx-auto sm:mx-0 relative "
-          >
-            <Link href={`/album/${album.id}`}>
+          <Link className="group" href={`album/${album.id}`} key={album.id}>
+            <div className="relative overflow-hidden rounded-lg shadow-lg">
               <Image
-                src={`${process.env.NEXT_PUBLIC_IMAGE_PATH}covers/${album.cover}`}
-                alt={album.name!}
-                width={200}
-                height={200}
+                alt="Album Cover"
+                className="w-full h-60 object-cover group-hover:scale-105 transition-transform duration-300"
+                height={300}
+                src={`${
+                  process.env.NEXT_PUBLIC_IMAGE_PATH
+                }covers/${album.cover!}`}
+                style={{
+                  aspectRatio: '400/300',
+                  objectFit: 'cover',
+                }}
+                width={400}
               />
-            </Link>
-            <div className="absolute bottom-0 left-0 w-full text-center text-white bg-black bg-opacity-40">
-              {album.name}
+              <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 p-4">
+                <h3 className="text-lg font-semibold text-white mb-1">
+                  {album.name}
+                </h3>
+                <p className="text-sm text-gray-300 line-clamp-2">
+                  {album.description}
+                </p>
+              </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </>

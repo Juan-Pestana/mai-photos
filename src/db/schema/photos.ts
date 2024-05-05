@@ -9,7 +9,6 @@ export const photos = sqliteTable('photos', {
   created_at: text('created_at').default(sql`(CURRENT_DATE)`),
   width: integer('width'),
   height: integer('height'),
-  location: text('location'),
   album_id: integer('album_id')
     //.notNull()
     .references(() => albums.id),

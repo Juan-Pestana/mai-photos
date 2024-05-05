@@ -11,7 +11,13 @@ export const initialState = {
   status: '',
 }
 
-export default function UploadForm({ id }: { id?: string }) {
+export default function UploadForm({
+  id,
+  albumId,
+}: {
+  id: string
+  albumId: string
+}) {
   //@ts-ignore
   const [state, formAction] = useFormState(uploadFile, initialState)
   const [preview, setPreview] = useState<string | ArrayBuffer | null>(null)
@@ -79,10 +85,10 @@ export default function UploadForm({ id }: { id?: string }) {
         formData.append('width', imageSize[0])
         formData.append('height', imageSize[1])
       }
-      if (id) {
-        formData.append('userId', id)
-      }
+
+      formData.append('userId', id)
     })
+    formData.append('albumId', albumId)
     //@ts-ignore
     await formAction(formData)
   }

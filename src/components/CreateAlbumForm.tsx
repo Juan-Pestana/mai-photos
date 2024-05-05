@@ -16,11 +16,11 @@ function CreateAlbumForm() {
   const [state, formAction] = useFormState(createAlbum, initialState)
   const [file, setFile] = useState<File | undefined>()
   const [albumName, setAlbumName] = useState<string>('')
+  const [albumDescription, setAlbumDescription] = useState<string>('')
 
   function handleChange(e: React.FormEvent<HTMLInputElement>) {
     const target = e.target as HTMLInputElement & { files: FileList }
     setFile(target.files[0])
-    console.log('acasd')
   }
 
   async function handleOnSubmit(e: React.SyntheticEvent) {
@@ -34,6 +34,7 @@ function CreateAlbumForm() {
 
     formData.append('album_cover', file, `cover${fileName}`)
     formData.append('album_name', albumName)
+    formData.append('album_decription', albumDescription)
 
     //@ts-ignore
     await formAction(formData)
@@ -49,6 +50,16 @@ function CreateAlbumForm() {
           placeholder="My Album"
           type="text"
           onChange={(e) => setAlbumName(e.target.value)}
+        />
+      </div>
+      <div>
+        <Label htmlFor="album_description">Album Description</Label>
+        <Input
+          id="album_description"
+          name="album_description"
+          placeholder="Coolest trip ever"
+          type="text"
+          onChange={(e) => setAlbumDescription(e.target.value)}
         />
       </div>
       <div>
