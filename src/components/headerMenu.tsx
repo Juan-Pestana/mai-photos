@@ -12,14 +12,14 @@ import CreateAlbumForm from './CreateAlbumForm'
 export default async function HeaderMenu() {
   const session = await auth()
   if (!session) {
-    return redirect('/signIn')
+    return null
   }
 
   return (
     <>
       <Sheet>
         <SheetTrigger className="border-2 border-white px-3 py-1 text-white rounded-md">
-          Menu
+          Create Album
         </SheetTrigger>
         <SheetContent>
           <SheetHeader>

@@ -1,16 +1,16 @@
 'use client'
 
-import { useFormStatus } from 'react-dom'
-
-export default function SubmitButton() {
-  const { pending } = useFormStatus()
+export default function SubmitButton({ loading }: { loading: boolean }) {
+  //const { pending } = useFormStatus()
   return (
     <button
-      className="block bg-blue-900 rounded-lg text-white py-3 w-full"
+      className={` ${
+        loading ? 'bg-blue-400' : 'bg-blue-500'
+      } block rounded-lg text-white py-3 w-full font-bold hover:bg-blue-400 shadow-lg transition-all`}
       type="submit"
-      aria-disabled={pending}
+      aria-disabled={loading}
     >
-      {pending ? 'Uploading' : 'Submit Image'}
+      {loading ? 'Uploading...' : 'Submit Image'}
     </button>
   )
 }

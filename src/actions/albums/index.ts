@@ -16,21 +16,16 @@ export async function createAlbum(
   const formDataSchema = z.object({
     album_name: z.string().min(1, 'We need a name for the album'),
     album_description: z.string().optional(),
-    album_cover: z
-      .custom<File>()
-      .refine((file) => !file || (!!file && file.size <= 10 * 1024 * 1024), {
-        message: 'The profile picture must be a maximum of 10MB.',
-      })
-      .refine((file) => !file || (!!file && file.type?.startsWith('image')), {
-        message: 'Only images are allowed to be sent.',
-      })
-      .optional(),
+    album_cover: z.string().optional(),
   })
 
   try {
     const session = await auth()
     if (!session || !session.user) {
-      throw new Error('unauthorized')
+      return {
+        status: 'error',
+        message: 'You must be authenticated to perform this action',
+      }
     }
     const data = formDataSchema.parse({
       album_name: formData.get('album_name'),
@@ -38,40 +33,25 @@ export async function createAlbum(
       album_cover: formData.get('album_cover'),
     })
 
-    if (data.album_cover && data.album_cover instanceof File) {
-      const photoName = `${Date.now()}${data.album_cover.name}`
-      const buffer = Buffer.from(await data.album_cover.arrayBuffer())
-      const name = photoName
-      const uploadResponse = await uploadCover(buffer, name)
-
-      if (uploadResponse) {
-        const res = await db.insert(albums).values({
-          name: data.album_name,
-          ownerId: session.user.id,
-          description: data.album_description,
-          cover: name,
-          //OJO CAMBIAR A DINAMICO
-        })
-        if (res) console.log('db res', res)
-      }
-    } else {
-      const res = await db.insert(albums).values({
-        name: data.album_name,
-        ownerId: session.user.id,
-        description: data.album_description,
-
-        //OJO CAMBIAR A DINAMICO
-      })
-      if (res) console.log('db res', res)
-    }
+    const res = await db.insert(albums).values({
+      name: data.album_name,
+      ownerId: session.user.id,
+      description: data.album_description,
+      cover: data.album_cover || null,
+    })
+    if (res) console.log('db res', res)
 
     revalidatePath('/')
+    return {
+      status: 'success',
+      message: `Album ${data.album_name} has been created.`,
+    }
   } catch (error) {
     console.log(error)
     if (error instanceof ZodError) {
-      return { status: 'error', message: error.errors[0] }
+      return { status: 'error', message: error.errors[0].message }
     }
-    return { status: 'error', message: 'Failed to upload file.' }
+    return { status: 'error', message: 'Failed to create album.' }
   }
 }
 
@@ -121,36 +101,36 @@ export async function shareAlbum(
   }
 }
 
-////////// utils////
+// ////////// utils////
 
-const s3Client = new S3Client({
-  region: process.env.NEXT_AWS_S3_REGION,
-  credentials: {
-    accessKeyId: process.env.NEXT_AWS_S3_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.NEXT_AWS_S3_SECRET_ACCESS_KEY!,
-  },
-})
+// const s3Client = new S3Client({
+//   region: process.env.NEXT_AWS_S3_REGION,
+//   credentials: {
+//     accessKeyId: process.env.NEXT_AWS_S3_ACCESS_KEY_ID!,
+//     secretAccessKey: process.env.NEXT_AWS_S3_SECRET_ACCESS_KEY!,
+//   },
+// })
 
-export async function uploadCover(file: Buffer, fileName: string) {
-  const fileBuffer = await sharp(file)
-    .jpeg({ quality: 60 })
-    .resize(400, 300)
-    .toBuffer()
+// export async function uploadCover(file: Buffer, fileName: string) {
+//   const fileBuffer = await sharp(file)
+//     .jpeg({ quality: 60 })
+//     .resize(400, 300)
+//     .toBuffer()
 
-  const params = {
-    Bucket: process.env.NEXT_AWS_S3_BUCKET_NAME,
-    Key: `covers/${fileName}`,
-    Body: fileBuffer,
-    ContentType: 'image/jpg',
-  }
-  try {
-    const command = new PutObjectCommand(params)
-    const response = await s3Client.send(command)
+//   const params = {
+//     Bucket: process.env.NEXT_AWS_S3_BUCKET_NAME,
+//     Key: `covers/${fileName}`,
+//     Body: fileBuffer,
+//     ContentType: 'image/jpg',
+//   }
+//   try {
+//     const command = new PutObjectCommand(params)
+//     const response = await s3Client.send(command)
 
-    console.log('Cover uploaded successfully:', response)
-    return `${fileName}`
-  } catch (error) {
-    console.log(error)
-    throw error
-  }
-}
+//     console.log('Cover uploaded successfully:', response)
+//     return `${fileName}`
+//   } catch (error) {
+//     console.log(error)
+//     throw error
+//   }
+// }

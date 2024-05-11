@@ -3,6 +3,7 @@
 import { auth, signOut } from '@/auth/auth'
 import { redirect } from 'next/navigation'
 import PhotoGallery from '@/components/photoGallery'
+import NotPhotosYet from '@/components/notPhotosYet'
 import { db } from '@/db'
 
 //import photos from '@/photos'
@@ -23,8 +24,16 @@ export default async function AlbumsPage({
 
   const album = await db.query.albums.findFirst({
     where: eq(albums.id, parseInt(params.albumId)),
-    with: { photos: true },
+    with: { photos: true, friends: true },
   })
+
+  const isContributor = album?.friends.find(
+    (contributor) => contributor.userId === session.user?.id
+  )
+
+  if (session.user?.id !== album?.ownerId && !isContributor) {
+    redirect('/not-authorized')
+  }
 
   const albumPhotos = album?.photos.map((photo) => {
     return {
@@ -37,11 +46,11 @@ export default async function AlbumsPage({
   if (!albumPhotos || !albumPhotos?.length) {
     return (
       <>
-        <div>There are no photos in this album</div>
+        <NotPhotosYet />
         <div className="flex items-center justify-center mb-8">
           <div>
             <Link
-              className="px-4 py-3 font-bold bg-blue-500 rounded-md text-white "
+              className="px-4 py-3 font-bold bg-blue-500 rounded-md text-white  hover:bg-blue-400 shadow-lg transition-all"
               href={`/photo-upload/${params.albumId}`}
             >
               Add more Photos

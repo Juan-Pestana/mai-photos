@@ -22,6 +22,7 @@ export default function UploadForm({
   const [state, formAction] = useFormState(uploadFile, initialState)
   const [preview, setPreview] = useState<string | ArrayBuffer | null>(null)
   const [imageSize, setImageSize] = useState<string[] | null>(null)
+  const [loading, setLoading] = useState<boolean>(false)
 
   const { toast } = useToast()
 
@@ -30,16 +31,10 @@ export default function UploadForm({
       toast({
         title: 'Success',
         description: `${state.message}`,
-        variant: 'default',
+        variant: state.status === 'success' ? 'default' : 'destructive',
       })
       setPreview(null)
-    }
-    if (state.status === 'error') {
-      toast({
-        title: 'Whooops...',
-        description: `${state.message}`,
-        variant: 'destructive',
-      })
+      setLoading(false)
     }
   }, [state.message])
 
@@ -66,16 +61,35 @@ export default function UploadForm({
   const { acceptedFiles, getRootProps, getInputProps, isDragActive } =
     useDropzone({
       onDrop,
+      multiple: false,
+      maxFiles: 1,
     })
 
   async function handleOnSubmit(e: React.SyntheticEvent) {
     e.preventDefault()
+    setLoading(true)
 
     if (typeof acceptedFiles[0] === 'undefined')
       return toast({
         title: 'Please select a Photo to upload',
         variant: 'default',
       })
+
+    const name = `${Date.now()}${acceptedFiles[0].name}`
+
+    const res = await fetch(`/api/signedUrl?name=${name}&type=photos`)
+    const url = await res.json()
+
+    if (!imageSize)
+      return toast({
+        title: 'Could not identify the image size',
+        variant: 'default',
+      })
+
+    const uploadFiles = await fetch(url, {
+      method: 'PUT',
+      body: acceptedFiles[0],
+    })
 
     const formData = new FormData()
 
@@ -136,11 +150,11 @@ export default function UploadForm({
             />
           </label>
         </div>
-        <SubmitButton />
+        <SubmitButton loading={loading} />
       </form>
 
       {preview && (
-        <div className="my-5">
+        <div className="my-5 flex items-center justify-center">
           <img className="h-96" src={preview as string} alt="Upload preview" />
         </div>
       )}
