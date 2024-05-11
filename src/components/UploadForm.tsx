@@ -78,7 +78,9 @@ export default function UploadForm({
     const name = `${Date.now()}${acceptedFiles[0].name}`
 
     const res = await fetch(`/api/signedUrl?name=${name}&type=photos`)
-    const url = await res.json()
+    const { url } = await res.json()
+
+    console.log(url)
 
     if (!imageSize)
       return toast({
