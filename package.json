@@ -26,7 +26,6 @@
     "react-dom": "^18",
     "react-dropzone": "^14.2.3",
     "react-photo-album": "^2.3.1",
-    "sharp": "^0.33.3",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
     "yet-another-react-lightbox": "^3.17.4",
