@@ -1,13 +1,12 @@
 'use server'
 import { revalidatePath } from 'next/cache'
-import { File } from 'buffer'
+
 import { z, ZodError } from 'zod'
 import { db } from '@/db'
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
+
 import { auth, signIn } from '@/auth/auth'
 //import sharp from 'sharp'
 import { albums, usersToAlbums } from '@/db/schema/album'
-import { redirect } from 'next/navigation'
 
 export async function createAlbum(
   prevState: { message: string; status: string },
