@@ -40,6 +40,7 @@ export default async function AlbumsPage({
       src: `${process.env.NEXT_PUBLIC_IMAGE_PATH}photos/${photo.url}`,
       width: photo.width!,
       height: photo.height!,
+      download: `${process.env.NEXT_PUBLIC_IMAGE_PATH}photos/${photo.url}?download`,
     }
   })
 

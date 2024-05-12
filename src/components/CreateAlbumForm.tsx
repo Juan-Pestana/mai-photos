@@ -44,10 +44,12 @@ function CreateAlbumForm() {
     setPending(true)
 
     const formData = new FormData()
+
     if (file?.name) {
       const name = `${Date.now()}${file.name}`
       const fileName = albumName.trim().replace(' ', '_') + name
-      const res = await fetch(`/api/signedUrl?name=${fileName}&type=covers`)
+      const cleanName = encodeURI(fileName)
+      const res = await fetch(`/api/signedUrl?name=${cleanName}&type=covers`)
       const urlResponse = await res.json()
       const uploadFiles = await fetch(urlResponse.url, {
         method: 'PUT',
@@ -56,7 +58,7 @@ function CreateAlbumForm() {
 
       console.log(uploadFiles)
       if (uploadFiles.ok) {
-        formData.append('album_cover', `${fileName}`)
+        formData.append('album_cover', `${cleanName}`)
       } else {
         toast({
           title: 'Cover fail to upload',
