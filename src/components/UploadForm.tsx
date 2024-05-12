@@ -96,7 +96,7 @@ export default function UploadForm({
     const formData = new FormData()
 
     acceptedFiles.map((file) => {
-      formData.append('file', file, file.name)
+      formData.append('file', name)
       if (imageSize) {
         formData.append('width', imageSize[0])
         formData.append('height', imageSize[1])
