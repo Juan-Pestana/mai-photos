@@ -143,13 +143,12 @@ export default function UploadForm({
               </p>
             </div>
             <input
-              area-opens-gallery
+              accept="images/*"
               className="bg-slate-500 p-5"
               {...getInputProps({
                 type: 'file',
                 name: 'file',
                 id: 'file',
-                accept: 'images/*',
               })}
             />
           </label>
