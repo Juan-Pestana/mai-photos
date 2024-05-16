@@ -62,8 +62,6 @@ export default function UploadForm({
   const { acceptedFiles, getRootProps, getInputProps, isDragActive } =
     useDropzone({
       onDrop,
-      multiple: false,
-      maxFiles: 1,
     })
 
   async function handleOnSubmit(e: React.SyntheticEvent) {
