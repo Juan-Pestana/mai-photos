@@ -5,6 +5,7 @@ import SubmitButton from './submitButton'
 import { useCallback, useState, useEffect } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { useToast } from '@/components/ui/use-toast'
+import PhotoGallery from './photoGallery'
 
 export const initialState = {
   message: '',
@@ -142,6 +143,7 @@ export default function UploadForm({
               </p>
             </div>
             <input
+              area-opens-gallery
               className="bg-slate-500 p-5"
               {...getInputProps({
                 type: 'file',
