@@ -16,7 +16,7 @@ export default function ShareAlbumForm({ albumId }: { albumId: string }) {
   async function handleOnSubmit(e: React.SyntheticEvent) {
     e.preventDefault()
 
-    let email = inputRef.current?.value.trim()
+    let email = inputRef.current?.value.trim().toLowerCase()
 
     const formData = new FormData()
 
