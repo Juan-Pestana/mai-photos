@@ -7,6 +7,8 @@ import { db } from '@/db'
 import { auth, signIn } from '@/auth/auth'
 //import sharp from 'sharp'
 import { albums, usersToAlbums } from '@/db/schema/album'
+import { eq } from 'drizzle-orm'
+import { users } from '@/db/schema/authSchema'
 
 export async function createAlbum(
   prevState: { message: string; status: string },
@@ -82,11 +84,21 @@ export async function shareAlbum(
 
     console.log('estamos aqui', data.email)
 
-    await signIn('resend', { redirect: false, email: data.email })
+    const isRegistered = await db.query.users.findFirst({
+      where: eq(users.email, data.email),
+    })
 
     const albumRelation = await db
       .insert(usersToAlbums)
       .values({ albumId: data.albumId, userEmail: data.email })
+
+    if (!isRegistered) {
+      await signIn('resend', {
+        redirect: false,
+        email: data.email,
+        redirectTo: '/',
+      })
+    }
 
     if (albumRelation) return { status: 'success', message: 'album shared' }
 
