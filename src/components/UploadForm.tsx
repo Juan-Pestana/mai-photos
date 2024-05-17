@@ -62,6 +62,7 @@ export default function UploadForm({
   const { acceptedFiles, getRootProps, getInputProps, isDragActive } =
     useDropzone({
       onDrop,
+      noDragEventsBubbling: true,
     })
 
   async function handleOnSubmit(e: React.SyntheticEvent) {
@@ -115,7 +116,10 @@ export default function UploadForm({
           className="flex items-center justify-center w-full my-5"
           {...getRootProps()}
         >
-          <label className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+          >
             <div className="flex flex-col items-center justify-center pt-5 pb-6">
               <svg
                 className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
@@ -150,7 +154,7 @@ export default function UploadForm({
                 multiple: false,
               })}
             />
-          </label>
+          </div>
         </div>
         <SubmitButton loading={loading} />
       </form>
