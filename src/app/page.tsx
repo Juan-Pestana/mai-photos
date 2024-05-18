@@ -15,7 +15,7 @@ import SharedAlbumsList from '@/components/sharedAlbumsList'
 export default async function Home() {
   const session = await auth()
   if (!session || !session.user?.id) {
-    return redirect('/signIn')
+    return redirect('/auth/signIn')
   }
 
   //console.log(pphotos)

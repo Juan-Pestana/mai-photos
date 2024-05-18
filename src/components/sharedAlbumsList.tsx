@@ -21,6 +21,28 @@ async function SharedAlbumsList({ email, id }: { email: string; id: string }) {
     }
   }
 
+  //const sharedAlbums = undefined
+
+  if (!sharedAlbums) {
+    return (
+      <>
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-3xl font-bold tracking-tight">My Albums</h1>
+        </div>
+        <div className="w-full flex items-center justify-center">
+          <div className="py-24 text-center">
+            <h1 className="text-2xl font-bold py-4">
+              You have no shared Albums
+            </h1>
+            <p className="text-lg">
+              Ask your friend to share his album with you to contribute
+            </p>
+          </div>
+        </div>
+      </>
+    )
+  }
+
   return (
     <>
       <div className="flex items-center justify-between mb-8">

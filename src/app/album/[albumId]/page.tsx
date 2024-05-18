@@ -19,7 +19,7 @@ export default async function AlbumsPage({
 }) {
   const session = await auth()
   if (!session) {
-    return redirect('/signIn')
+    return redirect('/auth/signIn')
   }
 
   const album = await db.query.albums.findFirst({
@@ -70,7 +70,7 @@ export default async function AlbumsPage({
         <div className=" flex flex-wrap-reverse gap-6 justify-between items-center mx-3 my-4">
           <div className="hidden lg:block lg:flex-1"></div>
           <div className="flex-1 text-center md:text-left lg:text-center">
-            <h1 className="text-2xl">{album?.name}</h1>
+            <h1 className="text-2xl font-bold">{album?.name}</h1>
           </div>
 
           <ShareAlbumForm albumId={params.albumId} />

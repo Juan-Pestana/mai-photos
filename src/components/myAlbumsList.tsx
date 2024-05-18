@@ -1,7 +1,6 @@
 import { db } from '@/db'
 import { albums } from '@/db/schema/album'
 import { eq } from 'drizzle-orm'
-import { Divide } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -10,8 +9,24 @@ async function MyAlbumsList({ id }: { id: string }) {
     where: eq(albums.ownerId, id),
   })
 
+  //const myAlbums = undefined
+
   if (!myAlbums) {
-    return
+    return (
+      <>
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-3xl font-bold tracking-tight">My Albums</h1>
+        </div>
+        <div className="w-full flex items-center justify-center">
+          <div className="py-24 text-center">
+            <h1 className="text-2xl font-bold py-4">
+              You have no Albums yet...
+            </h1>
+            <p className="text-lg">Create your first album now!</p>
+          </div>
+        </div>
+      </>
+    )
   }
 
   return (

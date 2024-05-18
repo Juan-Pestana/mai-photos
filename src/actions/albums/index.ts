@@ -100,7 +100,8 @@ export async function shareAlbum(
       })
     }
 
-    if (albumRelation) return { status: 'success', message: 'album shared' }
+    if (albumRelation)
+      return { status: 'success', message: `album shared with ${data.email}` }
 
     revalidatePath('/')
   } catch (error) {

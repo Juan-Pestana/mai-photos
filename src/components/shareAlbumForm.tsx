@@ -43,6 +43,9 @@ export default function ShareAlbumForm({ albumId }: { albumId: string }) {
         {' '}
         Invite{' '}
       </button>
+      {state?.status === 'success' ? (
+        <div className="text-sm text-green-700">state.message</div>
+      ) : null}
     </form>
   )
 }
