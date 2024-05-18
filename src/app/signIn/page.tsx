@@ -1,6 +1,4 @@
-import { signIn } from '@/auth/auth'
 import { SignIn } from '@/components/signin'
-import { auth, signOut } from '@/auth/auth'
 
 export default async function SignInPage() {
   return (

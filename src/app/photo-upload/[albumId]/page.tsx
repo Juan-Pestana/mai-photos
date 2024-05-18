@@ -54,7 +54,7 @@ export default async function testComponents({
         </div>
         <div className="pt-10">
           <h1 className="text-4xl py-10 text-center">
-            Upload Images to Album Name
+            Upload Images to {album?.name}
           </h1>
 
           <UploadForm id={session.user.id!} albumId={params.albumId} />
